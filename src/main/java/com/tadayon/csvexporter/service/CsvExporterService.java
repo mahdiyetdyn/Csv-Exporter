@@ -1,6 +1,7 @@
 package com.tadayon.csvexporter.service;
 
 import com.tadayon.csvexporter.config.CsvConfig;
+import com.tadayon.csvexporter.constant.CsvConstant;
 import com.tadayon.csvexporter.model.BlackList;
 import com.tadayon.csvexporter.repository.BlackListRepository;
 import jakarta.annotation.PostConstruct;
@@ -14,7 +15,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -31,8 +34,7 @@ public class CsvExporterService {
 
     public void exportToCsv(String filePath) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            //Write CSV header
-            writer.write("card_id,operation_date\n");
+            writer.write(CsvConstant.HEADER);
 
             int pageNumber = 0;
             boolean hasMoreRecords = true;
@@ -66,7 +68,13 @@ public class CsvExporterService {
         }
     }
 
+    private String convertPageToCsv(List<BlackList> blackLists) {
+        return blackLists.stream()
+                .map(this::recordToCsvLine)
+                .collect(Collectors.joining());
+    }
+
     private String recordToCsvLine(BlackList blackList) {
-        return String.format("%s,%s", blackList.getCardId(), blackList.getOperationDate());
+        return String.format(CsvConstant.FORMAT, blackList.getCardId(), blackList.getOperationDate());
     }
 }

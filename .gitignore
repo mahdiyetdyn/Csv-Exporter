@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore Maven Wrapper files
+mvnw
+mvnw.cmd
